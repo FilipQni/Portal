@@ -52,14 +52,17 @@ private:
 
 	FVector RightVector;
 	FVector ScreenCaptureLocation;
+	bool Active;
 
 	UFUNCTION()
 	void OnActorBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 public:
-	void Activate() const;
-	void Deactivate() const;
+	void Activate();
+	bool IsActive();
+	void SetActive(const bool IsActive);
+	void Deactivate();
 	void SetupRightVector();
 	void SetScreenCaptureLocation(FVector NewScreenCaptureLocation);
 	FVector GetDefaultScreenCaptureLocation() const;

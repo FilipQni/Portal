@@ -20,7 +20,8 @@ APortal::APortal()
 
 	TriggerZone = CreateDefaultSubobject<UBoxComponent>(TEXT("Trigger Zone"));
 	TriggerZone->SetupAttachment(Root);
-	
+
+	Active = false;
 }
 
 APortal::APortal(const FVector* Location)
@@ -44,14 +45,26 @@ void APortal::Tick(float DeltaTime)
 
 }
 
-void APortal::Activate() const
+void APortal::Activate()
 {
 	MeshPortal->SetMaterial(0, OnMaterial);
+	Active = true;
 }
 
-void APortal::Deactivate() const
+bool APortal::IsActive()
+{
+	return Active;
+}
+
+void APortal::SetActive(const bool IsActive)
+{
+	Active = IsActive;
+}
+
+void APortal::Deactivate()
 {
 	MeshPortal->SetMaterial(0, OffMaterial);
+	Active = false;
 }
 
 FVector APortal::GetRightVector() const
@@ -78,10 +91,10 @@ FVector APortal::GetDefaultScreenCaptureLocation() const
 void APortal::OnActorBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                                   int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if(OtherActor->GetName() == "BP_PlayerCharacter_C_0")
+	if(Active && OtherActor->GetName() == "BP_PlayerCharacter_C_0")
 	{
 		OnOverlapDelegate.ExecuteIfBound(OtherActor);
-		UE_LOG(LogTemp, Warning, TEXT("OtherActor: %s"), *OtherActor->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("OtherActor: %s"), *OtherActor->GetName());
 	}
 	
 }
