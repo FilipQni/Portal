@@ -3,6 +3,7 @@
 
 #include "PortalGun.h"
 #include "PortalManager.h"
+#include "PortalWall.h"
 
 // Sets default values
 APortalGun::APortalGun()
@@ -35,10 +36,11 @@ void APortalGun::CreatePortalEnter()
 {
 	FHitResult Hit;
 	Shot(Hit);
-	if(Shot(Hit) && Hit.GetActor() != nullptr)
+	if(Shot(Hit) && Hit.GetActor() != nullptr && Hit.GetActor()->IsA<APortalWall>())
 	{
 		PortalManager->CreatePortalEnter(Hit);
 		UE_LOG(LogTemp, Warning, TEXT("Stworzono Enter Portal"));
+		//UE_LOG(LogTemp, Warning, TEXT("Aktor: %s"), *Hit.GetActor()->GetClass()->GetName());
 	}
 }
 
