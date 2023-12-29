@@ -12,8 +12,8 @@ UCLASS()
 class PORTALDEMO_API APortalGun : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	APortalGun();
 
@@ -21,15 +21,22 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	void CreatePortalEnter();
 	void CreatePortalExit();
 
 private:
-	bool Shot(FHitResult &Hit);
-	bool PortalGunTrace(FHitResult& Hit, FVector& ShotDirection);
+	bool Shot(FHitResult& Hit);
+	bool PortalGunTrace(FHitResult& Hit, FVector& ShotDirection) const;
+	void FixPortalPosition(FHitResult& PortalHit);
+	void ShiftPortalPosition(FHitResult& HitToShift, FVector& Location, const FVector& DirectionVector) const;
+	void ShiftPortalPositionIfNeeded(FHitResult& FirstOffsetHit, FHitResult& SecondOffsetHit,
+	                                 FHitResult& PortalHit, FVector& SecondHitPosition,
+	                                 FVector& FirstHitPosition,
+	                                 FVector& SecondOffset, FVector& FirstOffset);
+
 	AController* APortalGun::GetOwnerController() const;
 
 	UPROPERTY(EditAnywhere)
@@ -42,8 +49,8 @@ private:
 	UStaticMeshComponent* MeshComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category="Classes")
-    TSubclassOf<APortalManager> PortalManagerClass;
-	
+	TSubclassOf<APortalManager> PortalManagerClass;
+
 	UPROPERTY()
 	APortalManager* PortalManager;
 };
