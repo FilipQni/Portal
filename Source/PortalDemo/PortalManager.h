@@ -46,8 +46,8 @@ private:
 	ASceneCapture2D* PortalEnterSceneCapture;
 	ASceneCapture2D* PortalExitSceneCapture;
 	APlayerCharacter* PlayerCharacter;
-
-	void OpenPortals();
+	
+	void ActivatePortals() const;
 	void TeleportTargetToExit(AActor* ActorToTeleport);
 	void TeleportTargetToEnter(AActor* ActorToTeleport);
 	void Teleport(AActor* ActorToTeleport, APortal* EntryPortal, APortal* ExitPortal);
