@@ -52,6 +52,7 @@ void APortalGun::CreatePortalExit()
 	FHitResult Hit;
 	if (Shot(Hit) && Hit.GetActor() != nullptr && Hit.GetActor()->IsA<APortalWall>())
 	{
+		FixPortalPosition(Hit);
 		FVector OwnerRotationVector = GetOwner()->GetActorRotation().Vector();
 		PortalManager->CreatePortalExit(Hit, OwnerRotationVector);
 	}
