@@ -52,5 +52,5 @@ private:
 	void TeleportTargetToEnter(AActor* ActorToTeleport);
 	void Teleport(AActor* ActorToTeleport, APortal* EntryPortal, APortal* ExitPortal);
 	void MoveAndRotateSceneCapture(ASceneCapture2D* PortalSceneCaptureToRotate, ASceneCapture2D* SecondPortalSceneCapture, APortal* MainPortal, APortal* SecondPortal);
-	void RotateCharacterAfterTeleportation(AActor* Player, APortal* EntryPortal, APortal* ExitPortal);
+	void RotateCharacterAfterTeleportation(APortal* EntryPortal, APortal* ExitPortal);
 };

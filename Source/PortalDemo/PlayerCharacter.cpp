@@ -51,23 +51,23 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction(TEXT("CreatePortalExit"), EInputEvent::IE_Pressed, this, &APlayerCharacter::CreatePortalExit);
 }
 
-void APlayerCharacter::Rotate(float Angle)
+void APlayerCharacter::RotateCharacter(float Angle) const
 {
 	FRotator NewCharacterRotation = GetActorRotation() + FRotator(0.0f, Angle, 0.0f);
-	GetController()->SetControlRotation(NewCharacterRotation);
-
-	//TODO: Nadać postaci odpowiednie velocity po przejściu przez portal
-	/*FVector PlayerVelocity = GetVelocity();
-	FVector AdjustedVelocity = PlayerVelocity.RotateAngleAxis(PortalRotationDiff.Yaw, FVector::UpVector);
-	LaunchCharacter(NewCharacterRotation, false, false);*/
+	GetController()->SetControlRotation(NewCharacterRotation)
 }
 
-void APlayerCharacter::MoveForward(float AxisValue)
+void APlayerCharacter::RotateVelocity(const FVector& Rotation)
+{
+	LaunchCharacter(Rotation, true, true);
+}
+
+void APlayerCharacter::MoveForward(float const AxisValue)
 {
 	AddMovementInput(GetActorForwardVector() * AxisValue);	
 }
 
-void APlayerCharacter::MoveRight(float AxisValue)
+void APlayerCharacter::MoveRight(float const AxisValue)
 {
 	AddMovementInput(GetActorRightVector() * AxisValue);	
 }
@@ -84,11 +84,13 @@ void APlayerCharacter::LookRight(float AxisValue)
 
 void APlayerCharacter::CreatePortalEnter()
 {
+	FRotator CameraRotation = CameraComponent->GetComponentRotation();
 	PortalGun->CreatePortalEnter();
 }
 
 void APlayerCharacter::CreatePortalExit()
 {
+	FRotator CameraRotation = CameraComponent->GetComponentRotation();
 	PortalGun->CreatePortalExit();
 }
 

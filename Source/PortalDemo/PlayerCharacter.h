@@ -27,8 +27,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	void Rotate(float Angle);
-
+	void RotateCharacter(float Angle) const;
+	void RotateVelocity(const FVector& Rotation);
 	
 private:
 	void MoveForward(float AxisValue);
@@ -38,7 +38,7 @@ private:
 	void CreatePortalEnter();
 	void CreatePortalExit();
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Mesh")
+	UPROPERTY(EditAnywhere, Category="Mesh")
 	class USpringArmComponent* SpringArmComponent;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Mesh")
