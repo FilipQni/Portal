@@ -43,7 +43,7 @@ void APortalGun::CreatePortalEnter()
 	{
 		FixPortalPosition(Hit);
 		FVector OwnerRotationVector = GetOwner()->GetActorRotation().Vector();
-		PortalManager->CreatePortalEnter(Hit, OwnerRotationVector);
+		PortalManager->CreatePortalEnter(Hit);
 	}
 }
 
@@ -54,7 +54,7 @@ void APortalGun::CreatePortalExit()
 	{
 		FixPortalPosition(Hit);
 		FVector OwnerRotationVector = GetOwner()->GetActorRotation().Vector();
-		PortalManager->CreatePortalExit(Hit, OwnerRotationVector);
+		PortalManager->CreatePortalExit(Hit);
 	}
 }
 
