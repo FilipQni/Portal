@@ -6,6 +6,7 @@
 #include "Portal.h"
 #include "PortalWall.h"
 #include "Engine/SceneCapture2D.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -121,8 +122,8 @@ void APortalManager::Teleport(AActor* ActorToTeleport, APortal* EntryPortal, APo
 	PlayerCharacter = Cast<APlayerCharacter>(ActorToTeleport);
 	ActorToTeleport->SetActorLocation(ExitPortal->GetDefaultScreenCaptureLocation(), false, nullptr,
 	                                  ETeleportType::TeleportPhysics);
+	RotateCharactersVelocity(ExitPortal);
 	RotateCharacterAfterTeleportation(EntryPortal, ExitPortal);
-	RotateCharactersVelocityVector(EntryPortal, ExitPortal);
 	ExitPortal->SetActive(false);
 }
 
@@ -160,12 +161,12 @@ void APortalManager::RotateCharacterAfterTeleportation(APortal* EntryPortal, APo
 	const float Dot = FVector::DotProduct(
 		EntryPortal->GetActorForwardVector(), ExitPortal->GetActorForwardVector());
 
-	if (Dot < 0.01f)
+	if ( -0.01 < Dot && Dot < 0.01f)
 	{
 		float Rotation = Result;
 		PlayerCharacter->RotateCharacter(Rotation);
 	}
-	else if (Dot > 0.99f)
+	else if (0.99 < Dot && Dot < 1.01f)
 	{
 		float Rotation = 180.0f;
 		PlayerCharacter->RotateCharacter(Rotation);
@@ -176,11 +177,18 @@ void APortalManager::RotateCharacterAfterTeleportation(APortal* EntryPortal, APo
 	       result);*/
 }
 
-void APortalManager::RotateCharacterVelocityVector(APortal* EntryPortal, APortal* ExitPortal)
+void APortalManager::RotateCharactersVelocity(APortal* ExitPortal)
 {
-	FRotator PortalRotationDiff = (EntryPortal->GetActorForwardVector() - ExitPortal->GetActorForwardVector()).
+	/*FRotator PortalRotationDiff = (EntryPortal->GetActorForwardVector() - ExitPortal->GetActorForwardVector()).
 		Rotation();
 	FVector CharacterVelocity = PlayerCharacter->GetVelocity();
 	FVector AdjustedVelocity = CharacterVelocity.RotateAngleAxis(PortalRotationDiff.Yaw, FVector::UpVector);
-	PlayerCharacter->RotateVelocity(AdjustedVelocity);
+	PlayerCharacter->RotateVelocity(AdjustedVelocity);*/
+
+	FVector CharacterVelocity = PlayerCharacter->GetVelocity();
+	float OriginalSpeed = CharacterVelocity.Size();
+	FVector NewVelocity = ExitPortal->GetActorForwardVector() * OriginalSpeed;
+	PlayerCharacter->GetCharacterMovement()->Velocity = NewVelocity;
+	if (PlayerCharacter->GetCharacterMovement()->Velocity != CharacterVelocity)
+		UE_LOG(LogTemp, Warning, TEXT("ZMIENIONO VELOCITY"));
 }
