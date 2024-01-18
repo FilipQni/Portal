@@ -54,7 +54,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 void APlayerCharacter::RotateCharacter(float Angle) const
 {
 	FRotator NewCharacterRotation = GetActorRotation() + FRotator(0.0f, Angle, 0.0f);
-	GetController()->SetControlRotation(NewCharacterRotation)
+	GetController()->SetControlRotation(NewCharacterRotation);
 }
 
 void APlayerCharacter::RotateVelocity(const FVector& Rotation)
