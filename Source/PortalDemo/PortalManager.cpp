@@ -4,7 +4,6 @@
 #include "PortalManager.h"
 #include "PlayerCharacter.h"
 #include "Portal.h"
-#include "PortalWall.h"
 #include "Engine/SceneCapture2D.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -17,6 +16,7 @@ APortalManager::APortalManager()
 
 	PortalEnter = nullptr;
 	PortalExit = nullptr;
+	IsActive = true;
 }
 
 // Called when the game starts or when spawned
@@ -40,7 +40,7 @@ void APortalManager::BeginPlay()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ASceneCapture2D were not found"));
+		UE_LOG(LogTemp, Warning, TEXT("ERROR: ASceneCapture2D WERE NOT FOUND"));
 	}
 }
 
@@ -58,26 +58,50 @@ void APortalManager::Tick(float DeltaTime)
 
 void APortalManager::CreatePortalEnter(const FHitResult& Hit)
 {
-	if (PortalEnter != nullptr)
-		PortalEnter->Destroy();
+	if(IsActive)
+	{
+		if (PortalEnter != nullptr)
+			PortalEnter->Destroy();
 
-	const FRotator PortalRotation = Hit.ImpactNormal.Rotation();
-	PortalEnter = GetWorld()->SpawnActor<APortal>(PortalEnterClass, Hit.Location, PortalRotation, SpawnParams);
-	ActivatePortals();
-	PortalEnter->SetupRightVector();
-	PortalEnter->OnOverlapDelegate.BindUObject(this, &APortalManager::TeleportTargetToExit);
+		const FRotator PortalRotation = Hit.ImpactNormal.Rotation();
+		PortalEnter = GetWorld()->SpawnActor<APortal>(PortalEnterClass, Hit.Location, PortalRotation, SpawnParams);
+		ActivatePortals();
+		PortalEnter->SetupRightVector();
+		PortalEnter->OnOverlapDelegate.BindUObject(this, &APortalManager::TeleportTargetToExit);
+	}
 }
 
 void APortalManager::CreatePortalExit(const FHitResult& Hit)
 {
+	if(IsActive)
+	{
+		if (PortalExit != nullptr)
+			PortalExit->Destroy();
+
+		const FRotator PortalRotation = Hit.ImpactNormal.Rotation();
+		PortalExit = GetWorld()->SpawnActor<APortal>(PortalExitClass, Hit.Location, PortalRotation, SpawnParams);
+		ActivatePortals();
+		PortalExit->SetupRightVector();
+		PortalExit->OnOverlapDelegate.BindUObject(this, &APortalManager::TeleportTargetToEnter);
+	}
+}
+
+void APortalManager::DestroyPortals() const
+{
+	if (PortalEnter != nullptr)
+		PortalEnter->Destroy();
 	if (PortalExit != nullptr)
 		PortalExit->Destroy();
+}
 
-	const FRotator PortalRotation = Hit.ImpactNormal.Rotation();
-	PortalExit = GetWorld()->SpawnActor<APortal>(PortalExitClass, Hit.Location, PortalRotation, SpawnParams);
-	ActivatePortals();
-	PortalExit->SetupRightVector();
-	PortalExit->OnOverlapDelegate.BindUObject(this, &APortalManager::TeleportTargetToEnter);
+void APortalManager::Activate()
+{
+	this->IsActive = true;
+}
+
+void APortalManager::Deactivate()
+{
+	this->IsActive = false;
 }
 
 void APortalManager::ActivatePortals() const
@@ -90,7 +114,7 @@ void APortalManager::ActivatePortals() const
 		FVector PortalLocationEnter = PortalEnter->GetActorLocation();
 		FRotator PortalRotationEnter = PortalEnter->GetActorRotation();
 
-		FVector NewPortalEnterSceneCaptureLocation = PortalLocationEnter + PortalRotationEnter.Vector() * 100.0f;
+		FVector NewPortalEnterSceneCaptureLocation = PortalLocationEnter + PortalRotationEnter.Vector() * 100.0;
 
 		PortalEnterSceneCapture->SetActorLocation(NewPortalEnterSceneCaptureLocation);
 		PortalEnterSceneCapture->SetActorRotation(PortalRotationEnter);
@@ -99,7 +123,7 @@ void APortalManager::ActivatePortals() const
 		FVector PortalLocationExit = PortalExit->GetActorLocation();
 		FRotator PortalRotationExit = PortalExit->GetActorRotation();
 
-		FVector NewPortalExitSceneCaptureLocation = PortalLocationExit + PortalRotationExit.Vector() * 100.0f;
+		FVector NewPortalExitSceneCaptureLocation = PortalLocationExit + PortalRotationExit.Vector() * 100.0;
 
 		PortalExitSceneCapture->SetActorLocation(NewPortalExitSceneCaptureLocation);
 		PortalExitSceneCapture->SetActorRotation(PortalRotationExit);

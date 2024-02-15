@@ -29,6 +29,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void CreatePortalEnter(const FHitResult& Hit);
 	void CreatePortalExit(const FHitResult& Hit);
+	void DestroyPortals() const;
+	void Activate();
+	void Deactivate();
 
 private:
 	UPROPERTY()
@@ -46,6 +49,7 @@ private:
 	ASceneCapture2D* PortalEnterSceneCapture;
 	ASceneCapture2D* PortalExitSceneCapture;
 	APlayerCharacter* PlayerCharacter;
+	bool IsActive;
 	
 	void ActivatePortals() const;
 	void TeleportTargetToExit(AActor* ActorToTeleport);
