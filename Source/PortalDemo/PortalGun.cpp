@@ -5,6 +5,7 @@
 
 #include "PortalManager.h"
 #include "PortalWall.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 APortalGun::APortalGun()
@@ -24,7 +25,7 @@ void APortalGun::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PortalManager = GetWorld()->SpawnActor<APortalManager>(PortalManagerClass);
+	PortalManager = Cast<APortalManager>(UGameplayStatics::GetActorOfClass(GetWorld(), APortalManager::StaticClass()));
 }
 
 // Called every frame

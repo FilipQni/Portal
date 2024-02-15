@@ -50,7 +50,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category="Classes")
 	TSubclassOf<APortalManager> PortalManagerClass;
-
-	UPROPERTY()
+	
 	APortalManager* PortalManager;
 };
