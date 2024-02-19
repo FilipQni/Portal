@@ -47,7 +47,9 @@ private:
 	UFUNCTION()
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	
+	UPROPERTY(EditInstanceOnly, Category="Settings")
 	AInteractive* ObjectToInteract;
+	
 	FVector CurrentLocation;
 	bool IsOverlapped = false;
 	double PressedButtonPosition; 

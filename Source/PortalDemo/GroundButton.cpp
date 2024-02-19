@@ -31,19 +31,6 @@ void AGroundButton::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TArray<AActor*> FoundActors;
-	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UInteractInterface::StaticClass(), FoundActors);
-
-	AInteractive* FoundActorInteractive;
-	for (AActor* FoundActor : FoundActors)
-	{
-		FoundActorInteractive = Cast<AInteractive>(FoundActor);
-		if (FoundActorInteractive->GetInteractionId() == this->InteractionId)
-		{
-			ObjectToInteract = FoundActorInteractive;
-		}
-	}
-
 	if (ObjectToInteract == nullptr)
 		UE_LOG(LogTemp, Error, TEXT("Ground button has no %s Object to Interact"), *this->GetName());
 
@@ -91,5 +78,4 @@ void AGroundButton::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* Ot
                                  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	IsOverlapped = false;
-	ObjectToInteract->ReactToInteraction();
 }
