@@ -3,25 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InteractInterface.h"
-#include "Interactive.h"
+#include "InteractiveActor.h"
 #include "GameFramework/Actor.h"
 #include "BoxSpawningTube.generated.h"
 
 class AMyBox;
 
 UCLASS()
-class PORTALDEMO_API ABoxSpawningTube : public AInteractive, public IInteractInterface
+class PORTALDEMO_API ABoxSpawningTube : public AInteractiveActor
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	ABoxSpawningTube();
-	virtual void ReactToInteraction() override;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
