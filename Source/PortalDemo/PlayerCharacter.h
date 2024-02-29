@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
+class APickableActor;
+class AInteractiveActor;
 class APortalGun;
 
 UCLASS()
@@ -29,6 +31,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void RotateCharacter(float Angle) const;
 	void RotateVelocity(const FVector& Rotation);
+	USceneComponent* GetHoldingItemComponent() const;
+	
 	
 private:
 	void MoveForward(float AxisValue);
@@ -37,6 +41,9 @@ private:
 	void LookRight(float AxisValue);
 	void CreatePortalEnter();
 	void CreatePortalExit();
+	void Interact();
+	void Drop();
+	void Throw();
 
 	UPROPERTY(EditAnywhere, Category="Mesh")
 	class USpringArmComponent* SpringArmComponent;
@@ -46,7 +53,14 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category="Mesh")
 	class UCameraComponent* CameraComponent;
+
+	UPROPERTY(EditAnywhere, Category="Mesh")
+	USceneComponent* HoldingComponent;
 	
 	UPROPERTY()
 	APortalGun* PortalGun;
+	
+	FCollisionQueryParams Params;
+	APickableActor* HeldItem;
+	float InteractionDistance = 300.0f;
 };

@@ -2,6 +2,9 @@
 
 
 #include "PlayerCharacter.h"
+
+#include "InteractiveActor.h"
+#include "PickableActor.h"
 #include "PortalGun.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -17,6 +20,9 @@ APlayerCharacter::APlayerCharacter()
 	
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComponent->SetupAttachment(SpringArmComponent);
+
+	HoldingComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Holding Component"));
+	HoldingComponent->SetupAttachment(CameraComponent);
 }
 
 // Called when the game starts or when spawned
@@ -29,6 +35,11 @@ void APlayerCharacter::BeginPlay()
 	PortalGun = GetWorld()->SpawnActor<APortalGun>(GunClass);
 	PortalGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
 	PortalGun->SetOwner(this);
+
+	Params.AddIgnoredActor(this);
+	Params.AddIgnoredActor(GetOwner());
+
+	HeldItem = nullptr;
 }
 
 // Called every frame
@@ -49,17 +60,23 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &APlayerCharacter::Jump);
 	PlayerInputComponent->BindAction(TEXT("CreatePortalEnter"), EInputEvent::IE_Pressed, this, &APlayerCharacter::CreatePortalEnter);
 	PlayerInputComponent->BindAction(TEXT("CreatePortalExit"), EInputEvent::IE_Pressed, this, &APlayerCharacter::CreatePortalExit);
+	PlayerInputComponent->BindAction(TEXT("Interact"), IE_Pressed, this, &APlayerCharacter::Interact);
 }
 
 void APlayerCharacter::RotateCharacter(float Angle) const
 {
-	FRotator NewCharacterRotation = GetActorRotation() + FRotator(0.0f, Angle, 0.0f);
+	const FRotator NewCharacterRotation = GetActorRotation() + FRotator(0.0f, Angle, 0.0f);
 	GetController()->SetControlRotation(NewCharacterRotation);
 }
 
 void APlayerCharacter::RotateVelocity(const FVector& Rotation)
 {
 	LaunchCharacter(Rotation, true, true);
+}
+
+USceneComponent* APlayerCharacter::GetHoldingItemComponent() const
+{
+	return HoldingComponent;
 }
 
 void APlayerCharacter::MoveForward(float const AxisValue)
@@ -84,13 +101,58 @@ void APlayerCharacter::LookRight(float AxisValue)
 
 void APlayerCharacter::CreatePortalEnter()
 {
-	FRotator CameraRotation = CameraComponent->GetComponentRotation();
+	if(HeldItem)
+	{
+		Throw();
+		return;
+	}
 	PortalGun->CreatePortalEnter();
 }
 
 void APlayerCharacter::CreatePortalExit()
 {
-	FRotator CameraRotation = CameraComponent->GetComponentRotation();
 	PortalGun->CreatePortalExit();
+}
+
+void APlayerCharacter::Interact()
+{
+	if(HeldItem != nullptr)
+	{
+		Drop();
+		HeldItem = nullptr;
+		return;
+	}
+	
+	const FVector Start = CameraComponent->GetComponentLocation();
+	const FVector End = Start + CameraComponent->GetForwardVector() * InteractionDistance;
+
+	FHitResult HitResult;
+	if(GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_GameTraceChannel1, Params))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HIT OBJECT NAME: %s"), *HitResult.GetActor()->GetName());
+		
+		if(APickableActor* PickableItem = Cast<APickableActor>(HitResult.GetActor()))
+		{
+			HeldItem = PickableItem;
+			PickableItem->Interact(this);
+		}
+
+		else if (AInteractiveActor* Item = Cast<AInteractiveActor>(HitResult.GetActor()))
+		{
+			Item->ReactToInteraction();
+		}
+	}
+}
+
+void APlayerCharacter::Drop()
+{
+	HeldItem->Drop();
+	HeldItem = nullptr;
+}
+
+void APlayerCharacter::Throw()
+{
+	HeldItem->Throw(CameraComponent->GetForwardVector());
+	HeldItem = nullptr;
 }
 
