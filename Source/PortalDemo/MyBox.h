@@ -3,29 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PickableActor.h"
 #include "GameFramework/Actor.h"
 #include "MyBox.generated.h"
 
 UCLASS()
-class PORTALDEMO_API AMyBox : public AActor
+class PORTALDEMO_API AMyBox : public APickableActor
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	AMyBox();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	UPROPERTY(VisibleAnywhere, Category="Mesh")
-	USceneComponent* Root;
-
-	UPROPERTY(VisibleAnywhere, Category="Mesh")
-	UStaticMeshComponent* BoxMesh;
 };
