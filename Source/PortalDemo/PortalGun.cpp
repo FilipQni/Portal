@@ -3,7 +3,7 @@
 
 #include "PortalGun.h"
 
-#include "I_PortalWall.h"
+#include "PortalWallInterface.h"
 #include "PortalManager.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -37,7 +37,7 @@ void APortalGun::Tick(float DeltaTime)
 void APortalGun::CreatePortalEnter()
 {
 	FHitResult Hit;
-	if (Shot(Hit) && Hit.GetActor() != nullptr && Hit.GetActor()->Implements<UI_PortalWall>())
+	if (Shot(Hit) && Hit.GetActor() != nullptr && Hit.GetActor()->Implements<UPortalWallInterface>())
 	{
 		FixPortalPosition(Hit);
 		PortalManager->CreatePortalEnter(Hit);
@@ -47,7 +47,7 @@ void APortalGun::CreatePortalEnter()
 void APortalGun::CreatePortalExit()
 {
 	FHitResult Hit;
-	if (Shot(Hit) && Hit.GetActor() != nullptr && Hit.GetActor()->Implements<UI_PortalWall>())
+	if (Shot(Hit) && Hit.GetActor() != nullptr && Hit.GetActor()->Implements<UPortalWallInterface>())
 	{
 		FixPortalPosition(Hit);
 		PortalManager->CreatePortalExit(Hit);
@@ -87,8 +87,7 @@ bool APortalGun::PortalGunTrace(FHitResult& Hit, FVector& ShotDirection) const
 	Params.AddIgnoredActor(this);
 	Params.AddIgnoredActor(GetOwner());
 
-	return GetWorld()->LineTraceSingleByChannel(Hit, Location, End,
-	                                            ECollisionChannel::ECC_GameTraceChannel1, Params);;
+	return GetWorld()->LineTraceSingleByChannel(Hit, Location, End, ECC_GameTraceChannel1, Params);
 }
 
 void APortalGun::FixPortalPosition(FHitResult& PortalHit)
@@ -161,7 +160,7 @@ void APortalGun::ShiftPortalPosition(FHitResult& HitToShift, FVector& Location,
 		                                     ECollisionChannel::ECC_GameTraceChannel1,
 		                                     Params);
 
-		if (Hit.GetActor() != nullptr && Hit.GetActor()->Implements<UI_PortalWall>()) IsFixed = true;
+		if (Hit.GetActor() != nullptr && Hit.GetActor()->Implements<UPortalWallInterface>()) IsFixed = true;
 		if (Counter > 30) IsFixed = true;
 	}
 	while (!IsFixed);
@@ -174,10 +173,10 @@ void APortalGun::ShiftPortalPositionIfNeeded(FHitResult& FirstOffsetHit, FHitRes
                                              FVector& FirstHitPosition,
                                              FVector& SecondOffset, FVector& FirstOffset)
 {
-	if (FirstOffsetHit.GetActor() != nullptr && FirstOffsetHit.GetActor()->Implements<UI_PortalWall>())
+	if (FirstOffsetHit.GetActor() != nullptr && FirstOffsetHit.GetActor()->Implements<UPortalWallInterface>())
 	{
 		if (SecondOffsetHit.GetActor() == nullptr || SecondOffsetHit.GetActor() != nullptr && !SecondOffsetHit.
-			GetActor()->Implements<UI_PortalWall>())
+			GetActor()->Implements<UPortalWallInterface>())
 			ShiftPortalPosition(PortalHit, SecondHitPosition, FirstOffset);
 	}
 	else ShiftPortalPosition(PortalHit, FirstHitPosition, SecondOffset);
