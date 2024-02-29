@@ -3,15 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InteractInterface.h"
-#include "Interactive.h"
 #include "DisablingPortalZone.generated.h"
 
 class UBoxComponent;
 class APortalManager;
 
 UCLASS()
-class PORTALDEMO_API ADisablingPortalZone : public AInteractive, public IInteractInterface
+class PORTALDEMO_API ADisablingPortalZone : public AActor
 {
 	GENERATED_BODY()
 	
@@ -26,8 +24,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
-	virtual void ReactToInteraction() override;
 
 private:
 	UFUNCTION()
@@ -45,9 +41,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category="Mesh")
 	UBoxComponent* TriggerZone;
-
-	FVector UndergroundLocation = FVector(1650.000000,-1150.000000,-600.000000);
-	FVector StartingLocation;
-	bool IsActive;
+	
+	bool bActive;
 	APortalManager* PortalManager;
 };
