@@ -3,15 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Interactive.h"
+#include "InteractiveActor.h"
 #include "GameFramework/Actor.h"
 #include "GroundButton.generated.h"
 
-class IInteractInterface;
+class IPickableItemInterface;
 class UBoxComponent;
 
 UCLASS()
-class PORTALDEMO_API AGroundButton : public AInteractive
+class PORTALDEMO_API AGroundButton : public AActor
 {
 	GENERATED_BODY()
 	
@@ -26,20 +26,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	
 private:
-	UPROPERTY(VisibleAnywhere, Category="Mesh")
-	USceneComponent* Root;
-
-	UPROPERTY(VisibleAnywhere, Category="Mesh")
-	UStaticMeshComponent* MeshButton;
-
-	UPROPERTY(VisibleAnywhere, Category="Mesh")
-	UStaticMeshComponent* MeshCover;
-
-	UPROPERTY(VisibleAnywhere, Category="Mesh")
-	UBoxComponent* TriggerZone;
-
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 								  int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -47,8 +35,21 @@ private:
 	UFUNCTION()
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	
+
+	UPROPERTY(VisibleDefaultsOnly, Category="Mesh")
+	USceneComponent* Root;
+
+	UPROPERTY(VisibleDefaultsOnly, Category="Mesh")
+	UStaticMeshComponent* MeshButton;
+
+	UPROPERTY(VisibleDefaultsOnly, Category="Mesh")
+	UStaticMeshComponent* MeshCover;
+
+	UPROPERTY(VisibleDefaultsOnly, Category="Mesh")
+	UBoxComponent* TriggerZone;
+	
 	UPROPERTY(EditInstanceOnly, Category="Settings")
-	AInteractive* ObjectToInteract;
+	AInteractiveActor* ObjectToInteract;
 	
 	FVector CurrentLocation;
 	bool IsOverlapped = false;

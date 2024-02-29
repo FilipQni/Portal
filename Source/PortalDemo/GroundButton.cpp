@@ -2,10 +2,7 @@
 
 
 #include "GroundButton.h"
-
-#include "InteractInterface.h"
 #include "Components/BoxComponent.h"
-#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AGroundButton::AGroundButton()
@@ -78,4 +75,5 @@ void AGroundButton::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* Ot
                                  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	IsOverlapped = false;
+	ObjectToInteract->ReactToInteraction();
 }
