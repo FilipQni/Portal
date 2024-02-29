@@ -21,7 +21,7 @@ ADisablingPortalZone::ADisablingPortalZone()
 	TriggerZone = CreateDefaultSubobject<UBoxComponent>(TEXT("Trigger Zone"));
 	TriggerZone->SetupAttachment(Root);
 
-	IsActive = true;
+	bActive = true;
 }
 
 // Called when the game starts or when spawned
@@ -32,8 +32,6 @@ void ADisablingPortalZone::BeginPlay()
 	PortalManager = Cast<APortalManager>(UGameplayStatics::GetActorOfClass(GetWorld(), APortalManager::StaticClass()));
 	TriggerZone->OnComponentBeginOverlap.AddDynamic(this, &ADisablingPortalZone::OnOverlapBegin);
 	TriggerZone->OnComponentEndOverlap.AddDynamic(this, &ADisablingPortalZone::OnOverlapEnd);
-
-	StartingLocation = this->GetActorLocation();
 }
 
 // Called every frame
@@ -57,10 +55,5 @@ void ADisablingPortalZone::OnOverlapEnd(UPrimitiveComponent* OverlappedComp,AAct
 	UE_LOG(LogTemp, Warning, TEXT("Zone overlap ends"));
 }
 
-void ADisablingPortalZone::ReactToInteraction()
-{
-	IsActive = !IsActive;
-	if(IsActive) this->SetActorLocation(StartingLocation);
-	else this->SetActorLocation(UndergroundLocation);
-}
+
 
