@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "BoxSpawningTube.generated.h"
 
+class APickableActor;
 class AMyBox;
 
 UCLASS()
@@ -21,9 +22,11 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual void ReactToInteraction() override;
 
+private:
+	void SpawnBox();
+	
 	UPROPERTY(VisibleAnywhere, Category="Mesh")
 	USceneComponent* Root;
 
@@ -42,16 +45,13 @@ public:
 	UPROPERTY(VisibleAnywhere, Category="Mesh")
 	UStaticMeshComponent* WallFourMesh;
 
-
-private:
-	void SpawnBox();
-	
 	UPROPERTY(EditDefaultsOnly, Category="Settings")
-	TSubclassOf<AMyBox> BoxClass;
+	TSubclassOf<APickableActor> BoxClass;
+
+	UPROPERTY(EditInstanceOnly, Category="Settings")
+	float Timer;
 	
 	AMyBox* Box;
 	FRotator BoxSpawnRotation;
 	FVector BoxSpawnLocation;
-
-	
 };

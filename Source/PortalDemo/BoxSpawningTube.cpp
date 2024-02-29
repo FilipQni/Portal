@@ -2,7 +2,6 @@
 
 
 #include "BoxSpawningTube.h"
-
 #include "MyBox.h"
 
 // Sets default values
@@ -38,20 +37,21 @@ void ABoxSpawningTube::BeginPlay()
 	BoxSpawnRotation = this->GetActorRotation();
 	BoxSpawnLocation = this->GetActorLocation();
 	BoxSpawnLocation.Z -= 100;
-}
 
-// Called every frame
-void ABoxSpawningTube::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
+	if(bActive) SpawnBox();
 }
 
 void ABoxSpawningTube::SpawnBox()
 {
 	if (Box != nullptr)
 		Box->Destroy();
-
-	Box = GetWorld()->SpawnActor<AMyBox>(BoxClass, BoxSpawnLocation, BoxSpawnRotation);
+	
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]()
+	{
+		Box = GetWorld()->SpawnActor<AMyBox>(BoxClass, BoxSpawnLocation, BoxSpawnRotation);
+		UE_LOG(LogTemp, Warning, TEXT("Box has been spawned"));
+	}, Timer, false);
 }
 
 void ABoxSpawningTube::ReactToInteraction()
