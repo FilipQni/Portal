@@ -134,7 +134,8 @@ void APlayerCharacter::Interact()
 		if(APickableActor* PickableItem = Cast<APickableActor>(HitResult.GetActor()))
 		{
 			HeldItem = PickableItem;
-			PickableItem->Interact(this);
+			PickableItem->Interact();
+			this->AttachToComponent(HoldingComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 		}
 
 		else if (AInteractiveActor* Item = Cast<AInteractiveActor>(HitResult.GetActor()))
@@ -147,6 +148,7 @@ void APlayerCharacter::Interact()
 void APlayerCharacter::Drop()
 {
 	HeldItem->Drop();
+	HeldItem->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
 	HeldItem = nullptr;
 }
 

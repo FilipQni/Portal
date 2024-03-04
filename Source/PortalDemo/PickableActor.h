@@ -24,7 +24,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	virtual void Interact(const APlayerCharacter* HoldingPlayer);
+	virtual void Interact();
 	void Drop();
 	void Throw(FVector CameraForwardVector);
 
