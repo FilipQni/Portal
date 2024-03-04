@@ -2,6 +2,8 @@
 
 
 #include "GroundButton.h"
+
+#include "SignalDotManager.h"
 #include "Components/BoxComponent.h"
 
 // Sets default values
@@ -69,6 +71,7 @@ void AGroundButton::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
 {
 	IsOverlapped = true;
 	ObjectToInteract->ReactToInteraction();
+	SignalDotManager->Interact();
 }
 
 void AGroundButton::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -76,4 +79,5 @@ void AGroundButton::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* Ot
 {
 	IsOverlapped = false;
 	ObjectToInteract->ReactToInteraction();
+	SignalDotManager->Interact();
 }

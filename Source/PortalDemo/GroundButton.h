@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "GroundButton.generated.h"
 
+class ASignalDotManager;
 class IPickableItemInterface;
 class UBoxComponent;
 
@@ -50,6 +51,9 @@ private:
 	
 	UPROPERTY(EditInstanceOnly, Category="Settings")
 	AInteractiveActor* ObjectToInteract;
+
+	UPROPERTY(EditInstanceOnly, Category="Settings")
+	ASignalDotManager* SignalDotManager;
 	
 	FVector CurrentLocation;
 	bool IsOverlapped = false;
