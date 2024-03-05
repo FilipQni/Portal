@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "SignalDotManager.generated.h"
 
+class ACheckboxPlate;
 class ASignalDot;
 
 UCLASS()
@@ -29,6 +30,9 @@ public:
 private:
 	UPROPERTY(EditInstanceOnly, Category="Settings")
 	int Id;
+
+	UPROPERTY(EditInstanceOnly, Category="Settings")
+	ACheckboxPlate* CheckboxPlate;
 	
 	bool bActive;
 	TArray<ASignalDot*> DotsArray;

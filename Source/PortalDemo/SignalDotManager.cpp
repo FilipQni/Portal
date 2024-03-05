@@ -2,9 +2,10 @@
 
 
 #include "SignalDotManager.h"
+
+#include "CheckboxPlate.h"
 #include "EngineUtils.h"
 #include "SignalDot.h"
-#include "SWarningOrErrorBox.h"
 
 // Sets default values
 ASignalDotManager::ASignalDotManager()
@@ -45,6 +46,7 @@ void ASignalDotManager::Interact()
 		for (ASignalDot* Dot : DotsArray)
 		{
 			Dot->TurnOn();
+			CheckboxPlate->TurnOn();
 		}
 	}
 	else
@@ -52,6 +54,7 @@ void ASignalDotManager::Interact()
 		for (ASignalDot* Dot : DotsArray)
 		{
 			Dot->TurnOff();
+			CheckboxPlate->TurnOff();
 		}
 	}
 }
