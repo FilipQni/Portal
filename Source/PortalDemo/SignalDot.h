@@ -22,8 +22,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	void TurnOn();
-	void TurnOff();
+	void TurnOn() const;
+	void TurnOff() const;
 	int GetId() const;
 
 private:

@@ -30,12 +30,12 @@ void ASignalDot::Tick(float DeltaTime)
 
 }
 
-void ASignalDot::TurnOn()
+void ASignalDot::TurnOn() const
 {
 	Mesh->SetMaterial(0, DotOnMaterial);
 }
 
-void ASignalDot::TurnOff()
+void ASignalDot::TurnOff() const
 {
 	Mesh->SetMaterial(0, DotOffMaterial);
 }
