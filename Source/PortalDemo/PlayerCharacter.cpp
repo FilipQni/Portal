@@ -8,6 +8,7 @@
 #include "PortalGun.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -101,6 +102,7 @@ void APlayerCharacter::LookRight(float AxisValue)
 
 void APlayerCharacter::CreatePortalEnter()
 {
+	
 	if(HeldItem)
 	{
 		Throw();

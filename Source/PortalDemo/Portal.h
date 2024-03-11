@@ -9,7 +9,7 @@
 
 class UMaterial;
 
-DECLARE_DELEGATE_OneParam(FPortalOverlapDelegate, AActor*);
+DECLARE_DELEGATE_OneParam(FPortalOverlapDelegate, float*);
 
 UCLASS()
 class PORTALDEMO_API APortal : public AActor
@@ -17,19 +17,25 @@ class PORTALDEMO_API APortal : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	APortal();
 	APortal(const FVector* Location);
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 	FPortalOverlapDelegate OnOverlapDelegate;
-
+	
+	virtual void Tick(float DeltaTime) override;
+	void Activate();
+	bool IsActive();
+	void SetActive();
+	void Deactivate();
+	void SetupRightVector();
+	void SetScreenCaptureLocation(FVector NewScreenCaptureLocation);
+	FVector GetDefaultScreenCaptureLocation() const;
+	FVector GetRightVector() const;
+	
 
 private:
 	UPROPERTY(VisibleAnywhere, Category="Mesh")
@@ -45,6 +51,9 @@ private:
 	UBoxComponent* TriggerZone;
 
 	UPROPERTY(EditDefaultsOnly, Category="Mesh")
+	UBoxComponent* CatchVelocityZone;
+
+	UPROPERTY(EditDefaultsOnly, Category="Mesh")
 	UMaterial* OnMaterial;
 
 	UPROPERTY(EditDefaultsOnly, Category="Mesh")
@@ -53,20 +62,15 @@ private:
 	FVector RightVector;
 	FVector ScreenCaptureLocation;
 	bool Active;
+	float CaughtPlayerVelocity;
+	float TriggerZoneCooldown = 0.2f;
+	float LastTriggerActivationTime = 0.0f;
 
 	UFUNCTION()
 	void TeleportPlayer(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	UFUNCTION()
+	void CatchPlayerVelocity(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-public:
-	void Activate();
-	bool IsActive();
-	void SetActive(const bool IsActive);
-	void Deactivate();
-	void SetupRightVector();
-	void SetScreenCaptureLocation(FVector NewScreenCaptureLocation);
-	FVector GetDefaultScreenCaptureLocation() const;
-	FVector GetRightVector() const;
-
 };

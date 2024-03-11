@@ -5,7 +5,6 @@
 #include "PlayerCharacter.h"
 #include "Portal.h"
 #include "Engine/SceneCapture2D.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -42,6 +41,7 @@ void APortalManager::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("ERROR: ASceneCapture2D WERE NOT FOUND"));
 	}
+
 }
 
 // Called every frame
@@ -131,24 +131,23 @@ void APortalManager::ActivatePortals() const
 	}
 }
 
-void APortalManager::TeleportTargetToExit(AActor* ActorToTeleport)
+void APortalManager::TeleportTargetToExit(float* CaughtPlayerVelocity)
 {
-	Teleport(ActorToTeleport, PortalEnter, PortalExit);
+	Teleport(CaughtPlayerVelocity, PortalEnter, PortalExit);
 }
 
-void APortalManager::TeleportTargetToEnter(AActor* ActorToTeleport)
+void APortalManager::TeleportTargetToEnter(float* CaughtPlayerVelocity)
 {
-	Teleport(ActorToTeleport, PortalExit, PortalEnter);
+	Teleport(CaughtPlayerVelocity, PortalExit, PortalEnter);
 }
 
-void APortalManager::Teleport(AActor* ActorToTeleport, APortal* EntryPortal, APortal* ExitPortal)
+void APortalManager::Teleport(float* CaughtPlayerVelocity, APortal* EntryPortal, APortal* ExitPortal)
 {
-	PlayerCharacter = Cast<APlayerCharacter>(ActorToTeleport);
-	ActorToTeleport->SetActorLocation(ExitPortal->GetDefaultScreenCaptureLocation(), false, nullptr,
+	PlayerCharacter->SetActorLocation(ExitPortal->GetDefaultScreenCaptureLocation(), false, nullptr,
 	                                  ETeleportType::TeleportPhysics);
-	RotateCharactersVelocity(ExitPortal);
+	RotateCharactersVelocity(ExitPortal, CaughtPlayerVelocity);
 	RotateCharacterAfterTeleportation(EntryPortal, ExitPortal);
-	ExitPortal->SetActive(false);
+	ExitPortal->Deactivate();
 }
 
 void APortalManager::MoveAndRotateSceneCapture(ASceneCapture2D* PortalSceneCaptureToRotate,
@@ -195,24 +194,12 @@ void APortalManager::RotateCharacterAfterTeleportation(APortal* EntryPortal, APo
 		float Rotation = 180.0f;
 		PlayerCharacter->RotateCharacter(Rotation);
 	}
-
-	/*UE_LOG(LogTemp, Warning, TEXT("Kąt: %f,  Rads: %f,    Dot: %f"), AngleInDegrees, AngleInRadians, dot);
-	UE_LOG(LogTemp, Warning, TEXT("Wejście: %s, Wyjście: %s, Wynik: %f"), *EntryVec.ToString(), *ExitVec.ToString(),
-	       result);*/
 }
 
-void APortalManager::RotateCharactersVelocity(APortal* ExitPortal)
+void APortalManager::RotateCharactersVelocity(APortal* ExitPortal, float* CaughtPlayerVelocity)
 {
-	/*FRotator PortalRotationDiff = (EntryPortal->GetActorForwardVector() - ExitPortal->GetActorForwardVector()).
-		Rotation();
-	FVector CharacterVelocity = PlayerCharacter->GetVelocity();
-	FVector AdjustedVelocity = CharacterVelocity.RotateAngleAxis(PortalRotationDiff.Yaw, FVector::UpVector);
-	PlayerCharacter->RotateVelocity(AdjustedVelocity);*/
-
-	FVector CharacterVelocity = PlayerCharacter->GetVelocity();
-	float OriginalSpeed = CharacterVelocity.Size();
-	FVector NewVelocity = ExitPortal->GetActorForwardVector() * OriginalSpeed;
-	PlayerCharacter->GetCharacterMovement()->Velocity = NewVelocity;
-	if (PlayerCharacter->GetCharacterMovement()->Velocity != CharacterVelocity)
-		UE_LOG(LogTemp, Warning, TEXT("ZMIENIONO VELOCITY"));
+	float NewSpeed = *CaughtPlayerVelocity;
+	FVector NewVelocity = ExitPortal->GetActorForwardVector() * NewSpeed;
+	PlayerCharacter->LaunchCharacter(NewVelocity, true, true);
+	DrawDebugDirectionalArrow(GetWorld(), ExitPortal->GetActorLocation(), ExitPortal->GetActorLocation() + ExitPortal->GetActorForwardVector() * NewSpeed, 2, FColor::Red, true, 5);
 }

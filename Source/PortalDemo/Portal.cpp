@@ -21,7 +21,8 @@ APortal::APortal()
 	TriggerZone = CreateDefaultSubobject<UBoxComponent>(TEXT("Trigger Zone"));
 	TriggerZone->SetupAttachment(Root);
 
-	Active = false;
+	CatchVelocityZone = CreateDefaultSubobject<UBoxComponent>(TEXT("Catch Velocity Zone"));
+	CatchVelocityZone->SetupAttachment(Root);
 }
 
 APortal::APortal(const FVector* Location)
@@ -33,9 +34,11 @@ APortal::APortal(const FVector* Location)
 void APortal::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
+	Active = false;
 	MeshPortal->SetMaterial(0,OffMaterial);
-	TriggerZone->OnComponentBeginOverlap.AddDynamic(this, &APortal::OnActorBeginOverlap);
+	TriggerZone->OnComponentBeginOverlap.AddDynamic(this, &APortal::TeleportPlayer);
+	CatchVelocityZone->OnComponentBeginOverlap.AddDynamic(this, &APortal::CatchPlayerVelocity);
 }
 
 // Called every frame
@@ -56,9 +59,9 @@ bool APortal::IsActive()
 	return Active;
 }
 
-void APortal::SetActive(const bool IsActive)
+void APortal::SetActive()
 {
-	Active = IsActive;
+	Active = true;
 }
 
 void APortal::Deactivate()
@@ -88,15 +91,31 @@ FVector APortal::GetDefaultScreenCaptureLocation() const
 	return ScreenCaptureLocation;
 }
 
+void APortal::CatchPlayerVelocity(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if(Active && OtherActor->GetName() == "BP_PlayerCharacter_C_0")
+	{
+		FVector Test = OtherActor->GetVelocity();
+		CaughtPlayerVelocity = Test.Size();
+		UE_LOG(LogTemp, Warning, TEXT("Vector speed: %s,  Speed: %f"), *Test.ToString(), CaughtPlayerVelocity);
+	}
+}
+
 void APortal::TeleportPlayer(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 								  int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
 	if(Active && OtherActor->GetName() == "BP_PlayerCharacter_C_0")
 	{
-		OnOverlapDelegate.ExecuteIfBound(OtherActor);
+		float CurrentTime = GetWorld()->GetTimeSeconds();
+		if (CurrentTime - LastTriggerActivationTime >= TriggerZoneCooldown)
+		{
+			OnOverlapDelegate.ExecuteIfBound(&CaughtPlayerVelocity);
+			LastTriggerActivationTime = CurrentTime;
+		}
+		
 	}
-	
 }
 
 
