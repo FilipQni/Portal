@@ -46,13 +46,13 @@ void ADisablingPortalZone::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, A
 {
 	PortalManager->DestroyPortals();
 	PortalManager->Deactivate();
-	UE_LOG(LogTemp, Warning, TEXT("Zone overlap begins"));
+	UE_LOG(LogTemp, Warning, TEXT("DisablingPortalZone overlap begins"));
 }
 
 void ADisablingPortalZone::OnOverlapEnd(UPrimitiveComponent* OverlappedComp,AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	PortalManager->Activate();
-	UE_LOG(LogTemp, Warning, TEXT("Zone overlap ends"));
+	UE_LOG(LogTemp, Warning, TEXT("DisablingPortalZone overlap ends"));
 }
 
 
