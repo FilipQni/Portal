@@ -24,27 +24,14 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
+	USceneComponent* GetHoldingItemComponent() const;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void RotateCharacter(float Angle) const;
 	void RotateVelocity(const FVector& Rotation);
-	USceneComponent* GetHoldingItemComponent() const;
-	
+
 	
 private:
-	void MoveForward(float AxisValue);
-	void MoveRight(float AxisValue);
-	void LookUp(float AxisValue);
-	void LookRight(float AxisValue);
-	void CreatePortalEnter();
-	void CreatePortalExit();
-	void Interact();
-	void Drop();
-	void Throw();
-
 	UPROPERTY(EditAnywhere, Category="Mesh")
 	class USpringArmComponent* SpringArmComponent;
 	
@@ -63,4 +50,15 @@ private:
 	FCollisionQueryParams Params;
 	APickableActor* HeldItem;
 	float InteractionDistance = 300.0f;
+
+	void Throw();
+	void Drop();
+	void Interact();
+	void CreatePortalExit();
+	void CreatePortalEnter();
+	void MoveForward(float AxisValue);
+	void MoveRight(float AxisValue);
+	void LookUp(float AxisValue);
+	void LookRight(float AxisValue);
+	
 };

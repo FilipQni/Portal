@@ -52,10 +52,10 @@ private:
 	bool IsActive;
 	
 	void ActivatePortals() const;
-	void TeleportTargetToExit(AActor* ActorToTeleport);
-	void TeleportTargetToEnter(AActor* ActorToTeleport);
-	void Teleport(AActor* ActorToTeleport, APortal* EntryPortal, APortal* ExitPortal);
+	void TeleportTargetToExit(float* CaughtPlayerVelocity);
+	void TeleportTargetToEnter(float* CaughtPlayerVelocity);
+	void Teleport(float* CaughtPlayerVelocity, APortal* EntryPortal, APortal* ExitPortal);
 	void MoveAndRotateSceneCapture(ASceneCapture2D* PortalSceneCaptureToRotate, ASceneCapture2D* SecondPortalSceneCapture, APortal* MainPortal, APortal* SecondPortal);
 	void RotateCharacterAfterTeleportation(APortal* EntryPortal, APortal* ExitPortal);
-	void RotateCharactersVelocity(APortal* ExitPortal);
+	void RotateCharactersVelocity(APortal* ExitPortal, float* CaughtPlayerVelocity);
 };
