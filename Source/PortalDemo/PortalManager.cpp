@@ -28,20 +28,6 @@ void APortalManager::BeginPlay()
 
 	SpawnParams.bNoFail = true;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	TArray<AActor*> SceneCaptureActors;
-	UGameplayStatics::GetAllActorsOfClass(this, ASceneCapture2D::StaticClass(), SceneCaptureActors);
-	if (SceneCaptureActors.Num() > 0)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ASceneCapture2D number: %d"), SceneCaptureActors.Num());
-		PortalEnterSceneCapture = Cast<ASceneCapture2D>(SceneCaptureActors[0]);
-		PortalExitSceneCapture = Cast<ASceneCapture2D>(SceneCaptureActors[1]);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ERROR: ASceneCapture2D WERE NOT FOUND"));
-	}
-
 }
 
 // Called every frame
@@ -58,7 +44,7 @@ void APortalManager::Tick(float DeltaTime)
 
 void APortalManager::CreatePortalEnter(const FHitResult& Hit)
 {
-	if(IsActive)
+	if (IsActive)
 	{
 		if (PortalEnter != nullptr)
 			PortalEnter->Destroy();
@@ -73,7 +59,7 @@ void APortalManager::CreatePortalEnter(const FHitResult& Hit)
 
 void APortalManager::CreatePortalExit(const FHitResult& Hit)
 {
-	if(IsActive)
+	if (IsActive)
 	{
 		if (PortalExit != nullptr)
 			PortalExit->Destroy();
@@ -147,7 +133,6 @@ void APortalManager::Teleport(float* CaughtPlayerVelocity, APortal* EntryPortal,
 	                                  ETeleportType::TeleportPhysics);
 	RotateCharactersVelocity(ExitPortal, CaughtPlayerVelocity);
 	RotateCharacterAfterTeleportation(EntryPortal, ExitPortal);
-	ExitPortal->Deactivate();
 }
 
 void APortalManager::MoveAndRotateSceneCapture(ASceneCapture2D* PortalSceneCaptureToRotate,
@@ -184,7 +169,7 @@ void APortalManager::RotateCharacterAfterTeleportation(APortal* EntryPortal, APo
 	const float Dot = FVector::DotProduct(
 		EntryPortal->GetActorForwardVector(), ExitPortal->GetActorForwardVector());
 
-	if ( -0.01 < Dot && Dot < 0.01f)
+	if (-0.01 < Dot && Dot < 0.01f)
 	{
 		float Rotation = Result;
 		PlayerCharacter->RotateCharacter(Rotation);
@@ -201,5 +186,7 @@ void APortalManager::RotateCharactersVelocity(APortal* ExitPortal, float* Caught
 	float NewSpeed = *CaughtPlayerVelocity;
 	FVector NewVelocity = ExitPortal->GetActorForwardVector() * NewSpeed;
 	PlayerCharacter->LaunchCharacter(NewVelocity, true, true);
-	DrawDebugDirectionalArrow(GetWorld(), ExitPortal->GetActorLocation(), ExitPortal->GetActorLocation() + ExitPortal->GetActorForwardVector() * NewSpeed, 2, FColor::Red, true, 5);
+	DrawDebugDirectionalArrow(GetWorld(), ExitPortal->GetActorLocation(),
+	                          ExitPortal->GetActorLocation() + ExitPortal->GetActorForwardVector() * NewSpeed, 2,
+	                          FColor::Red, true, 5);
 }

@@ -45,9 +45,13 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Portals")
 	TSubclassOf<APortal> PortalExitClass;
 
-	FActorSpawnParameters SpawnParams;
+	UPROPERTY(EditInstanceOnly, Category="Portals")
 	ASceneCapture2D* PortalEnterSceneCapture;
+
+	UPROPERTY(EditInstanceOnly, Category="Portals")
 	ASceneCapture2D* PortalExitSceneCapture;
+	
+	FActorSpawnParameters SpawnParams;
 	APlayerCharacter* PlayerCharacter;
 	bool IsActive;
 	
