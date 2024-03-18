@@ -2,7 +2,7 @@
 
 
 #include "PortalManager.h"
-#include "PlayerCharacter.h"
+#include "PortalDemo/Player/PlayerCharacter.h"
 #include "Portal.h"
 #include "Engine/SceneCapture2D.h"
 #include "Kismet/GameplayStatics.h"

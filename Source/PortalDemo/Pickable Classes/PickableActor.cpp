@@ -2,8 +2,7 @@
 
 
 #include "PickableActor.h"
-#include "PlayerCharacter.h"
-#include "Math/UnitConversion.h"
+
 
 // Sets default values
 APickableActor::APickableActor()

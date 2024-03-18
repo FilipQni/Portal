@@ -2,8 +2,7 @@
 
 
 #include "Portal.h"
-
-#include "PlayerCharacter.h"
+#include "PortalDemo/Player/PlayerCharacter.h"
 
 // Sets default values
 APortal::APortal()

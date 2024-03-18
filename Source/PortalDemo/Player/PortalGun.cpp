@@ -3,8 +3,8 @@
 
 #include "PortalGun.h"
 
-#include "PortalWallInterface.h"
-#include "PortalManager.h"
+#include "PortalDemo/Portals/Portal Walls/PortalWallInterface.h"
+#include "PortalDemo/Portals/PortalManager.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values

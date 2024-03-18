@@ -2,7 +2,7 @@
 
 
 #include "DisablingPortalZoneManager.h"
-#include "DisablingPortalZone.h"
+#include "PortalDemo/Portals/DisablingPortalZone.h"
 
 // Sets default values
 ADisablingPortalZoneManager::ADisablingPortalZoneManager()

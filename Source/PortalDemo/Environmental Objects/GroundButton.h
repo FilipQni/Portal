@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InteractiveActor.h"
 #include "GameFramework/Actor.h"
 #include "GroundButton.generated.h"
 
 class ASignalDotManager;
 class IPickableItemInterface;
 class UBoxComponent;
+class AInteractiveActor;
 
 UCLASS()
 class PORTALDEMO_API AGroundButton : public AActor

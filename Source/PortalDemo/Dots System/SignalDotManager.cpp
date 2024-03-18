@@ -3,9 +3,9 @@
 
 #include "SignalDotManager.h"
 
-#include "CheckboxPlate.h"
 #include "EngineUtils.h"
 #include "SignalDot.h"
+#include "PortalDemo/Environmental Objects/CheckboxPlate.h"
 
 // Sets default values
 ASignalDotManager::ASignalDotManager()

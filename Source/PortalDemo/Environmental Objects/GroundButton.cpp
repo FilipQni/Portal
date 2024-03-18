@@ -3,8 +3,9 @@
 
 #include "GroundButton.h"
 
-#include "SignalDotManager.h"
+#include "PortalDemo/Interactive Classes/InteractiveActor.h"
 #include "Components/BoxComponent.h"
+#include "PortalDemo/Dots System/SignalDotManager.h"
 
 // Sets default values
 AGroundButton::AGroundButton()

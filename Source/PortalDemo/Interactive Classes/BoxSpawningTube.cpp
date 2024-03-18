@@ -2,7 +2,7 @@
 
 
 #include "BoxSpawningTube.h"
-#include "MyBox.h"
+#include "PortalDemo/Pickable Classes/MyBox.h"
 
 // Sets default values
 ABoxSpawningTube::ABoxSpawningTube()
