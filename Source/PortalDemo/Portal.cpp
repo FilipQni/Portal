@@ -3,6 +3,8 @@
 
 #include "Portal.h"
 
+#include "PlayerCharacter.h"
+
 // Sets default values
 APortal::APortal()
 {
@@ -39,6 +41,8 @@ void APortal::BeginPlay()
 	MeshPortal->SetMaterial(0,OffMaterial);
 	TriggerZone->OnComponentBeginOverlap.AddDynamic(this, &APortal::TeleportPlayer);
 	CatchVelocityZone->OnComponentBeginOverlap.AddDynamic(this, &APortal::CatchPlayerVelocity);
+
+	
 }
 
 // Called every frame
@@ -105,8 +109,7 @@ void APortal::CatchPlayerVelocity(UPrimitiveComponent* OverlappedComp, AActor* O
 void APortal::TeleportPlayer(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 								  int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
-	if(Active && OtherActor->GetName() == "BP_PlayerCharacter_C_0")
+	if(Active && OtherActor->IsA<APlayerCharacter>())
 	{
 		float CurrentTime = GetWorld()->GetTimeSeconds();
 		if (CurrentTime - LastTriggerActivationTime >= TriggerZoneCooldown)
