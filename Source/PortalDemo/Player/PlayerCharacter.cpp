@@ -2,13 +2,11 @@
 
 
 #include "PlayerCharacter.h"
-
-#include "InteractiveActor.h"
-#include "PickableActor.h"
 #include "PortalGun.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "PortalDemo/Interactive Classes/InteractiveActor.h"
+#include "PortalDemo/Pickable Classes/PickableActor.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
