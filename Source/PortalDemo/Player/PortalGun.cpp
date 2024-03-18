@@ -126,7 +126,7 @@ void APortalGun::FixPortalPosition(FHitResult& PortalHit)
 	                                     ECollisionChannel::ECC_GameTraceChannel1,
 	                                     Params);
 
-	ShiftPortalPositionIfNeeded(FirstOffsetHit, SecondOffsetHit, PortalHit, RightPosition, LeftPosition, RightOffset,
+	ShiftPortalPositionIfNeeded(FirstOffsetHit, SecondOffsetHit, PortalHit, LeftPosition, RightPosition, RightOffset,
 	                            LeftOffset);
 
 	//Upper and lower positions
@@ -137,7 +137,7 @@ void APortalGun::FixPortalPosition(FHitResult& PortalHit)
 	                                     ECollisionChannel::ECC_GameTraceChannel1,
 	                                     Params);
 
-	ShiftPortalPositionIfNeeded(FirstOffsetHit, SecondOffsetHit, PortalHit, BelowPosition, AbovePosition, BelowOffset,
+	ShiftPortalPositionIfNeeded(FirstOffsetHit, SecondOffsetHit, PortalHit, AbovePosition, BelowPosition, BelowOffset,
 	                            AboveOffset);
 }
 
@@ -169,8 +169,8 @@ void APortalGun::ShiftPortalPosition(FHitResult& HitToShift, FVector& Location,
 }
 
 void APortalGun::ShiftPortalPositionIfNeeded(FHitResult& FirstOffsetHit, FHitResult& SecondOffsetHit,
-                                             FHitResult& PortalHit, FVector& SecondHitPosition,
-                                             FVector& FirstHitPosition,
+                                             FHitResult& PortalHit, FVector& FirstHitPosition,
+                                             FVector& SecondHitPosition,
                                              FVector& SecondOffset, FVector& FirstOffset)
 {
 	if (FirstOffsetHit.GetActor() != nullptr && FirstOffsetHit.GetActor()->Implements<UPortalWallInterface>())
