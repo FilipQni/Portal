@@ -2,7 +2,6 @@
 
 
 #include "PortalGun.h"
-
 #include "PortalDemo/Portals/Portal Walls/PortalWallInterface.h"
 #include "PortalDemo/Portals/PortalManager.h"
 #include "Kismet/GameplayStatics.h"
@@ -37,28 +36,30 @@ void APortalGun::Tick(float DeltaTime)
 void APortalGun::CreatePortalEnter()
 {
 	FHitResult Hit;
-	if (Shot(Hit) && Hit.GetActor() != nullptr && Hit.GetActor()->Implements<UPortalWallInterface>())
+	if (Shot(Hit, ECC_GameTraceChannel1) && Hit.GetActor() != nullptr && Hit.GetActor()->Implements<
+		UPortalWallInterface>())
 	{
-		FixPortalPosition(Hit);
-		PortalManager->CreatePortalEnter(Hit);
+		if (FixPortalPosition(Hit, ECC_GameTraceChannel1))
+			PortalManager->CreatePortalEnter(Hit);
 	}
 }
 
 void APortalGun::CreatePortalExit()
 {
 	FHitResult Hit;
-	if (Shot(Hit) && Hit.GetActor() != nullptr && Hit.GetActor()->Implements<UPortalWallInterface>())
+	if (Shot(Hit, ECC_GameTraceChannel2) && Hit.GetActor() != nullptr && Hit.GetActor()->Implements<
+		UPortalWallInterface>())
 	{
-		FixPortalPosition(Hit);
-		PortalManager->CreatePortalExit(Hit);
+		if (FixPortalPosition(Hit, ECC_GameTraceChannel2))
+
+			PortalManager->CreatePortalExit(Hit);
 	}
 }
 
-bool APortalGun::Shot(FHitResult& Hit)
+bool APortalGun::Shot(FHitResult& Hit, ECollisionChannel CollisionChannel)
 {
 	FVector ShotDirection;
-	bool GunTraceResult = PortalGunTrace(Hit, ShotDirection);
-
+	bool GunTraceResult = PortalGunTrace(Hit, ShotDirection, CollisionChannel);
 
 	return GunTraceResult;
 	//TODO: Animacja i dźwięk strzału
@@ -69,7 +70,8 @@ bool APortalGun::Shot(FHitResult& Hit)
 	}
 }
 
-bool APortalGun::PortalGunTrace(FHitResult& Hit, FVector& ShotDirection) const
+
+bool APortalGun::PortalGunTrace(FHitResult& Hit, FVector& ShotDirection, ECollisionChannel CollisionChannel) const
 {
 	const AController* OwnerController = GetOwnerController();
 	if (OwnerController == nullptr)
@@ -87,11 +89,12 @@ bool APortalGun::PortalGunTrace(FHitResult& Hit, FVector& ShotDirection) const
 	Params.AddIgnoredActor(this);
 	Params.AddIgnoredActor(GetOwner());
 
-	return GetWorld()->LineTraceSingleByChannel(Hit, Location, End, ECC_GameTraceChannel1, Params);
+	return GetWorld()->LineTraceSingleByChannel(Hit, Location, End, CollisionChannel, Params);
 }
 
-void APortalGun::FixPortalPosition(FHitResult& PortalHit)
+bool APortalGun::FixPortalPosition(FHitResult& PortalHit, ECollisionChannel CollisionChannel)
 {
+	FVector ArrayOfVectors[8];
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	Params.AddIgnoredActor(GetOwner());
@@ -99,50 +102,79 @@ void APortalGun::FixPortalPosition(FHitResult& PortalHit)
 	FVector Location = PortalHit.Location + PortalHit.Normal * 100;
 
 	FVector RightOffset = PortalHit.Normal.Rotation().RotateVector(FVector::LeftVector);
-	FVector RightPosition = Location + RightOffset * 85.0;
-
-	FVector LeftOffset = PortalHit.Normal.Rotation().RotateVector(FVector::RightVector);
-	FVector LeftPosition = Location + LeftOffset * 85.0;
+	ArrayOfVectors[0] = Location + RightOffset * 85.0; // Right Position
+	ArrayOfVectors[1] = Location + RightOffset * -85.0; // Left Position
 
 	FVector AboveOffset = PortalHit.Normal.Rotation().RotateVector(FVector::UpVector);
-	FVector AbovePosition = Location + AboveOffset * 140.0;
+	ArrayOfVectors[2] = Location + AboveOffset * 140.0; // Above Position
+	ArrayOfVectors[3] = Location + AboveOffset * -140.0; // Below Position
 
-	FVector BelowOffset = PortalHit.Normal.Rotation().RotateVector(FVector::DownVector);
-	FVector BelowPosition = Location + BelowOffset * 140.0;
+	ArrayOfVectors[4] = Location + RightOffset * 55.0 + AboveOffset * 105; // Right Above Position
+	ArrayOfVectors[5] = Location + RightOffset * 55.0 + AboveOffset * -105; // Right Below Position
+	ArrayOfVectors[6] = Location + RightOffset * -55.0 + AboveOffset * 105; // Left Above Position
+	ArrayOfVectors[7] = Location + RightOffset * -55.0 + AboveOffset * -105; // Left Below Position
 
 	FHitResult FirstOffsetHit;
 	FHitResult SecondOffsetHit;
 
-	DrawDebugLine(GetWorld(), AbovePosition, (AbovePosition - PortalHit.Normal * 200), FColor::Red, false, 8, 0, 1);
-	DrawDebugLine(GetWorld(), BelowPosition, (BelowPosition - PortalHit.Normal * 200), FColor::Red, false, 8, 0, 1);
-	DrawDebugLine(GetWorld(), RightPosition, (RightPosition - PortalHit.Normal * 200), FColor::Red, false, 8, 0, 1);
-	DrawDebugLine(GetWorld(), LeftPosition, (LeftPosition - PortalHit.Normal * 200), FColor::Red, false, 8, 0, 1);
+	DrawDebugLine(GetWorld(), ArrayOfVectors[0], (ArrayOfVectors[0] - PortalHit.Normal * 200), FColor::Red, false, 8, 0,
+	              1);
+	DrawDebugLine(GetWorld(), ArrayOfVectors[1], (ArrayOfVectors[1] - PortalHit.Normal * 200), FColor::Red, false, 8, 0,
+	              1);
+	DrawDebugLine(GetWorld(), ArrayOfVectors[2], (ArrayOfVectors[2] - PortalHit.Normal * 200), FColor::Red, false, 8, 0,
+	              1);
+	DrawDebugLine(GetWorld(), ArrayOfVectors[3], (ArrayOfVectors[3] - PortalHit.Normal * 200), FColor::Red, false, 8, 0,
+	              1);
 
 	//Left and right positions
-	GetWorld()->LineTraceSingleByChannel(FirstOffsetHit, LeftPosition, (LeftPosition - PortalHit.Normal * 200),
-	                                     ECollisionChannel::ECC_GameTraceChannel1,
+	GetWorld()->LineTraceSingleByChannel(FirstOffsetHit, ArrayOfVectors[0],
+	                                     (ArrayOfVectors[0] - PortalHit.Normal * 200),
+	                                     CollisionChannel,
 	                                     Params);
-	GetWorld()->LineTraceSingleByChannel(SecondOffsetHit, RightPosition, (RightPosition - PortalHit.Normal * 200),
-	                                     ECollisionChannel::ECC_GameTraceChannel1,
+	GetWorld()->LineTraceSingleByChannel(SecondOffsetHit, ArrayOfVectors[1],
+	                                     (ArrayOfVectors[1] - PortalHit.Normal * 200),
+	                                     CollisionChannel,
 	                                     Params);
 
-	ShiftPortalPositionIfNeeded(FirstOffsetHit, SecondOffsetHit, PortalHit, LeftPosition, RightPosition, RightOffset,
-	                            LeftOffset);
+	ShiftPortalPositionIfNeeded(FirstOffsetHit, SecondOffsetHit, PortalHit, ArrayOfVectors[0], ArrayOfVectors[1],
+	                            RightOffset, CollisionChannel);
 
 	//Upper and lower positions
-	GetWorld()->LineTraceSingleByChannel(FirstOffsetHit, AbovePosition, (AbovePosition - PortalHit.Normal * 200),
-	                                     ECollisionChannel::ECC_GameTraceChannel1,
+	GetWorld()->LineTraceSingleByChannel(FirstOffsetHit, ArrayOfVectors[2],
+	                                     (ArrayOfVectors[2] - PortalHit.Normal * 200),
+	                                     CollisionChannel,
 	                                     Params);
-	GetWorld()->LineTraceSingleByChannel(SecondOffsetHit, BelowPosition, (BelowPosition - PortalHit.Normal * 200),
-	                                     ECollisionChannel::ECC_GameTraceChannel1,
+	GetWorld()->LineTraceSingleByChannel(SecondOffsetHit, ArrayOfVectors[3],
+	                                     (ArrayOfVectors[3] - PortalHit.Normal * 200),
+	                                     CollisionChannel,
 	                                     Params);
 
-	ShiftPortalPositionIfNeeded(FirstOffsetHit, SecondOffsetHit, PortalHit, AbovePosition, BelowPosition, BelowOffset,
-	                            AboveOffset);
+	ShiftPortalPositionIfNeeded(FirstOffsetHit, SecondOffsetHit, PortalHit, ArrayOfVectors[2], ArrayOfVectors[3],
+	                            AboveOffset, CollisionChannel);
+
+	return IsPortalPositionAvailable(PortalHit, Params, ArrayOfVectors, CollisionChannel);
+}
+
+bool APortalGun::IsPortalPositionAvailable(FHitResult& PortalHit, FCollisionQueryParams& Params,
+                                           FVector ArrayOfVectors[8], ECollisionChannel CollisionChannel)
+{
+	FHitResult Hit;
+
+	for (int i = 0; i < 8; i++)
+	{
+		GetWorld()->LineTraceSingleByChannel(Hit, ArrayOfVectors[i], (ArrayOfVectors[i] - PortalHit.Normal * 200),
+		                                     CollisionChannel,
+		                                     Params);
+		if (Hit.GetActor() != nullptr && !Hit.GetActor()->Implements<UPortalWallInterface>())
+			return false;
+	}
+
+
+	return true;
 }
 
 void APortalGun::ShiftPortalPosition(FHitResult& HitToShift, FVector& Location,
-                                     const FVector& DirectionVector) const
+                                     const FVector& DirectionVector, ECollisionChannel CollisionChannel) const
 {
 	bool IsFixed = false;
 	int Counter = 0;
@@ -157,7 +189,7 @@ void APortalGun::ShiftPortalPosition(FHitResult& HitToShift, FVector& Location,
 		Counter++;
 		Location = Location + DirectionVector * 20.0;
 		GetWorld()->LineTraceSingleByChannel(Hit, Location, (Location - HitToShift.Normal * 200),
-		                                     ECollisionChannel::ECC_GameTraceChannel1,
+		                                     CollisionChannel,
 		                                     Params);
 
 		if (Hit.GetActor() != nullptr && Hit.GetActor()->Implements<UPortalWallInterface>()) IsFixed = true;
@@ -171,15 +203,16 @@ void APortalGun::ShiftPortalPosition(FHitResult& HitToShift, FVector& Location,
 void APortalGun::ShiftPortalPositionIfNeeded(FHitResult& FirstOffsetHit, FHitResult& SecondOffsetHit,
                                              FHitResult& PortalHit, FVector& FirstHitPosition,
                                              FVector& SecondHitPosition,
-                                             FVector& SecondOffset, FVector& FirstOffset)
+                                             FVector& Offset,
+                                             ECollisionChannel CollisionChannel)
 {
 	if (FirstOffsetHit.GetActor() != nullptr && FirstOffsetHit.GetActor()->Implements<UPortalWallInterface>())
 	{
 		if (SecondOffsetHit.GetActor() == nullptr || SecondOffsetHit.GetActor() != nullptr && !SecondOffsetHit.
 			GetActor()->Implements<UPortalWallInterface>())
-			ShiftPortalPosition(PortalHit, SecondHitPosition, FirstOffset);
+			ShiftPortalPosition(PortalHit, SecondHitPosition, Offset, CollisionChannel);
 	}
-	else ShiftPortalPosition(PortalHit, FirstHitPosition, SecondOffset);
+	else ShiftPortalPosition(PortalHit, FirstHitPosition, -Offset, CollisionChannel);
 }
 
 AController* APortalGun::GetOwnerController() const

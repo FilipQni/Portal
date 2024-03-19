@@ -28,14 +28,18 @@ public:
 	void CreatePortalExit();
 
 private:
-	bool Shot(FHitResult& Hit);
-	bool PortalGunTrace(FHitResult& Hit, FVector& ShotDirection) const;
-	void FixPortalPosition(FHitResult& PortalHit);
-	void ShiftPortalPosition(FHitResult& HitToShift, FVector& Location, const FVector& DirectionVector) const;
+	bool Shot(FHitResult& Hit, ECollisionChannel CollisionChannel);
+	bool PortalGunTrace(FHitResult& Hit, FVector& ShotDirection, ECollisionChannel CollisionChannel) const;
+	bool FixPortalPosition(FHitResult& PortalHit, ECollisionChannel CollisionChannel);
+	void ShiftPortalPosition(FHitResult& HitToShift, FVector& Location, const FVector& DirectionVector, ECollisionChannel CollisionChannel) const;
 	void ShiftPortalPositionIfNeeded(FHitResult& FirstOffsetHit, FHitResult& SecondOffsetHit,
 	                                 FHitResult& PortalHit, FVector& SecondHitPosition,
 	                                 FVector& FirstHitPosition,
-	                                 FVector& SecondOffset, FVector& FirstOffset);
+	                                 FVector& Offset,
+	                                 ECollisionChannel CollisionChannel);
+	bool IsPortalPositionAvailable(FHitResult& PortalHit, FCollisionQueryParams& Params, FVector ArrayOfVectors[8],
+	                               ECollisionChannel CollisionChannel);
+
 
 	AController* APortalGun::GetOwnerController() const;
 
@@ -50,6 +54,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category="Classes")
 	TSubclassOf<APortalManager> PortalManagerClass;
-	
+
 	APortalManager* PortalManager;
 };
